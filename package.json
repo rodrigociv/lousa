@@ -1,0 +1,51 @@
+{
+  "name": "lousa",
+  "productName": "Lousa",
+  "version": "1.0.1",
+  "description": "Quadro de giz, post-its e folha de caderno para roteiros e planejamento.",
+  "author": "Rodrigo",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "mac": "electron-builder --mac --arm64",
+    "win": "electron-builder --win zip --x64",
+    "win-instalador": "electron-builder --win nsis --x64"
+  },
+  "build": {
+    "appId": "com.rodrigo.lousa",
+    "productName": "Lousa",
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**"
+    ],
+    "directories": {
+      "output": "instaladores"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity",
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  },
+  "lousa": {
+    "repo": "rodrigociv/lousa"
+  }
+}
