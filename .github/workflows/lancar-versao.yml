@@ -1,4 +1,4 @@
-# Quando uma etiqueta como v1.0.1 chega ao GitHub, gera os instaladores e publica a versão.
+# Quando uma etiqueta como v1.0.3 chega ao GitHub, gera os instaladores e publica a versão.
 name: Lançar versão
 on:
   push:
@@ -6,7 +6,14 @@ on:
 permissions:
   contents: write
 jobs:
+  versao:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "${GITHUB_REF_NAME#v}" --notes "Instale o arquivo .dmg no Mac ou o .exe no Windows."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   instaladores:
+    needs: versao
     strategy:
       fail-fast: false
       matrix:
@@ -23,12 +30,11 @@ jobs:
           node-version: lts/*
           cache: npm
       - run: npm ci
-      - shell: bash
-        run: >
-          npx electron-builder ${{ matrix.alvo }} --publish always
-          -c.publish.provider=github
-          -c.publish.owner=${{ github.repository_owner }}
-          -c.publish.repo=${{ github.event.repository.name }}
-          -c.publish.releaseType=release
+      - run: npx electron-builder ${{ matrix.alvo }} --publish never
+        shell: bash
+      - run: |
+          shopt -s nullglob
+          gh release upload "$GITHUB_REF_NAME" instaladores/*.dmg instaladores/*.exe --repo "$GITHUB_REPOSITORY" --clobber
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
